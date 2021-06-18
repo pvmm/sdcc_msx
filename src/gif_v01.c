@@ -1,3 +1,5 @@
+#ifdef ENABLE_PSG
+
 #include <gif_v01.h>
 #include <psg.h>
 
@@ -145,8 +147,4 @@ inline static void _gif_v01_copy_pn_asm_placeholder(void) {
 
 #endif
 
-
-
-
-
-
+#endif /* ENABLE_PSG */

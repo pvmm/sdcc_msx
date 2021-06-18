@@ -141,8 +141,8 @@ inline static void msxhal_getch_placeholder(void) {
 
 }
 
-void msxhal_call_b(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_B, (*f)() ); }
-void msxhal_call_c(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_C, (*f)() ); }
-void msxhal_call_d(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_D, (*f)() ); }
+//void msxhal_call_b(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_B, (*f)() ); }
+//void msxhal_call_c(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_C, (*f)() ); }
+//void msxhal_call_d(uint8_t segment, call_function f) { IN_SEGMENT(segment, PAGE_D, (*f)() ); }
 
 #endif

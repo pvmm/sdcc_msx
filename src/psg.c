@@ -1,5 +1,7 @@
 #include <psg.h>
 
+//#ifdef ENABLE_PSG
+
 T_AY_3_8910_Registers AY_3_8910_Registers;
 
 void PSG_init() {
@@ -490,4 +492,4 @@ void ayFX_spin(void) {
 // PT3 PLAYER
 
 
-
+//#endif /* ENABLE_PSG */

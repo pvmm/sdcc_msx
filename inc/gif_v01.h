@@ -1,3 +1,5 @@
+#ifdef ENABLE_PSG
+
 #pragma once
 
 #include <tms99X8.h>
@@ -153,6 +155,4 @@ INLINE void gif_v01_addPN_section2_256(const uint8_t *data)                     
 
 #endif
 
-
-
-
+#endif /* ENABLE_PSG */

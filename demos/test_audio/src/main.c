@@ -204,7 +204,7 @@ int main(void) {
 			ayFX_afb(afbItems[afbSelection].item, afbItems[afbSelection].segment,afbSubSelection,15,0);
 		    }
 		    if (classSelection==1) {
-			ayr_play(ayrItems[ayrSelection].item, ayrItems[ayrSelection].segment);
+			//ayr_play(ayrItems[ayrSelection].item, ayrItems[ayrSelection].segment);
 		    }
 		    
 		}

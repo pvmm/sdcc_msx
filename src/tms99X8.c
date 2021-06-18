@@ -278,6 +278,23 @@ void TMS99X8_writeSprite8 (uint8_t pos, const U8x8   s) {
 	TMS99X8_memcpy(MODE2_ADDRESS_SG+(((uint16_t)pos)<<3), (const uint8_t *)s, 8);
 }
 
+void TMS99X8_writeSprite8_flip (uint8_t pos, const U8x8   s) {
+	U8x8 t;
+
+	for (int i = 0; i < 8; ++i) {
+		t[i]  = (s[i] & 1)  << 7; // 00000001 => 10000000
+		t[i] |= (s[i] & 2)  << 5; // 00000010 => 01000000
+		t[i] |= (s[i] & 4)  << 3; // 00000100 => 00100000
+		t[i] |= (s[i] & 8)  << 1; // 00001000 => 00010000
+		t[i] |= (s[i] & 16) >> 1; // 00010000 => 00001000
+		t[i] |= (s[i] & 32) >> 3; // 00100000 => 00000100
+		t[i] |= (s[i] & 64) >> 5; // 01000000 => 00000010
+		t[i] |= (s[i] & 128) >> 7;
+	}
+
+	TMS99X8_memcpy(MODE2_ADDRESS_SG+(((uint16_t)pos)<<3), (const uint8_t *)t, 8);
+}
+
 void TMS99X8_writeSprite16(uint8_t pos, const U16x16 s) {
 
 	uint8_t tmp[32];

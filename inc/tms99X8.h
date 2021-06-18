@@ -326,6 +326,7 @@ INLINE void TMS99X8_setBorderColor(TMS99X8_BackgroundColor color) {
 }
 
 void TMS99X8_writeSprite8(uint8_t pos, const U8x8 s);
+void TMS99X8_writeSprite8_flip(uint8_t pos, const U8x8 s);
 void TMS99X8_writeSprite16(uint8_t pos, const U16x16 s);
 
 void TMS99X8_writeSpriteAttributes(EM2_Buffer buffer, const T_SA sa);

@@ -1,3 +1,4 @@
+//#ifdef ENABLE_PSG
 #pragma once
 
 #include <msxhal.h>
@@ -79,4 +80,4 @@ bool ayr_spin();
 void ayr_set_volume(int8_t volume);
 void ayr_fade_out(int8_t fade_out);
 
-
+//#endif /* ENABLE_PSG */

@@ -3,7 +3,7 @@ CODE_SIZE = 0x7FDF
 ADDR_DATA = 0xC000
 DATA_SIZE = 0x3000
 
-MSG = "\033[1;32m[$(@)]\033[1;31m\033[0m"
+MSG = "$(@) "
 
 CCZ80 = sdcc
 ASM = sdasz80
@@ -14,7 +14,7 @@ OPENMSX1_JP = $(OPENMSX_BIN) -machine C-BIOS_MSX1_JP  $(OPENMSX_PARAM) -carta
 OPENMSX2    = $(OPENMSX_BIN) -machine C-BIOS_MSX2     $(OPENMSX_PARAM) -carta 
 OPENMSX2P   = $(OPENMSX_BIN) -machine C-BIOS_MSX2+_JP $(OPENMSX_PARAM) -carta 
 OPENMSXTR   = $(OPENMSX_BIN) -machine Panasonic_FS-A1GT $(OPENMSX_PARAM) -carta 
-HEXBIN = makebin -s 4194304
+HEXBIN = sdcc-makebin -s 4194304
 
 MSX_LINKER = tmp/sdcc_msx/util/module_linker
 
@@ -23,14 +23,14 @@ INCLUDES = -Itmp/inc -Iinc -Isdcc_msx/inc -Isrc
 #VERBOSE = -V
 MAX_ALLOCS = 2000
 CCFLAGS_MSX   = --std-sdcc99 --disable-warning 110 --disable-warning 126 $(VERBOSE) -mz80 --code-loc $(ADDR_CODE) $(ADDR_CONST)  --code-size $(CODE_SIZE) --data-loc $(ADDR_DATA) --iram-size $(DATA_SIZE) --no-std-crt0 --out-fmt-ihx --max-allocs-per-node $(MAX_ALLOCS) --allow-unsafe-read --nostdlib --no-xinit-opt
-CCFLAGS_LINUX =  -g -O0 -Wall -Wextra -Winvalid-pch -Wformat=2 -Winit-self -Wno-inline -Wpacked -Wpointer-arith -Wlarger-than-655000 -Wmissing-declarations -Wmissing-format-attribute -Wmissing-noreturn -Wredundant-decls -Wsign-compare -Wstrict-aliasing=2 -Wswitch-enum -Wundef -Wunreachable-code -Wwrite-strings -pipe
+CCFLAGS_LINUX =  -g -O0 -Wall -Wextra -Winvalid-pch -Wformat=2 -Winit-self -Wno-inline -Wpacked -Wpointer-arith -Wlarger-than-655000 -Wmissing-format-attribute -Wmissing-noreturn -Wredundant-decls -Wsign-compare -Wstrict-aliasing=2 -Wswitch-enum -Wundef -Wunreachable-code -Wwrite-strings -pipe
 
 #recursive wildcard
 rwildcard=$(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
 
-HEADERS       += $(call rwildcard, src/ inc/ sdcc_msx/inc/ tmp/inc/, *.h) 
-SOURCES_C     += $(call rwildcard,      src/ sdcc_msx/src/ tmp/src/, *.c)
-SOURCES_ASM   += $(call rwildcard,      src/ sdcc_msx/src/ tmp/src/, *.s)
+HEADERS       += $(call rwildcard, src inc sdcc_msx/inc tmp/inc, *.h) 
+SOURCES_C     += $(call rwildcard,     src sdcc_msx/src tmp/src, *.c)
+SOURCES_ASM   += $(call rwildcard,     src sdcc_msx/src tmp/src, *.s)
 
 .PHONY: pre_target all clean msx run gdb rom
 
@@ -61,9 +61,9 @@ tmp/%.c: tmp/inc/%.h
 tmp/inc/res/fonts/%.h: res/fonts/% tmp/sdcc_msx/util/mkFont
 	@echo $(MSG)
 	@mkdir -p tmp/$(<D)
-	@tmp/sdcc_msx/util/mkFont $< > tmp/$<.c
+	tmp/sdcc_msx/util/mkFont $< > tmp/$<.c
 	@mkdir -p tmp/inc/$(<D)
-	@cproto -qve < tmp/$<.c > $@
+	cproto -qve < tmp/$<.c > $@
 
 tmp/inc/res/midi/%.h: res/midi/% tmp/sdcc_msx/util/mkMidi
 	@echo $(MSG)
@@ -92,10 +92,10 @@ tmp/inc/resources.h: $(HEADERS_GEN)
 OBJ_ASM    = $(addprefix tmp/,$(SOURCES_ASM:.s=.rel))
 OBJ_C      = $(addprefix tmp/,$(SOURCES_C:.c=.rel))
 
-.PRECIOUS: tmp/%.ihx $(OBJ_ASM) $(OBJ_C) tmp/%.lib $(SOURCES_C) $(HEADERS)
+.PRECIOUS: tmp/%.ihx $(OBJ_ASM) $(OBJ_C) $(SOURCES_C) $(HEADERS)
 
 tmp/%.rel: %.s tmp/inc/resources.h $(HEADERS) 
-	@echo $(MSG)
+	echo $(MSG)
 	@mkdir -p $(@D)
 	@cp $< tmp/$*.source.asm
 	@cp tmp/$*.source.asm tmp/$*.optimized.asm
@@ -103,35 +103,35 @@ tmp/%.rel: %.s tmp/inc/resources.h $(HEADERS)
 	@echo " "`grep "size" tmp/$*.sym | awk 'strtonum("0x"$$4) {print $$2": "strtonum("0x"$$4)" bytes"}'` 
 
 tmp/%.rel: %.c tmp/inc/resources.h $(HEADERS)
-	@echo -n $(MSG)
+	@echo -n $(MSG) 1 
 	@mkdir -p $(@D)
 	@$(CCZ80) -S -D MSX $(INCLUDES) $(CCFLAGS_MSX) $< -o tmp/$*.sdcc.asm
 	@cp tmp/$*.sdcc.asm tmp/$*.optimized.asm
 	@$(ASM) -ogslp $@ tmp/$*.optimized.asm	
 	@echo " "`grep "size" tmp/$*.sym | awk 'strtonum("0x"$$4) {print $$2": "strtonum("0x"$$4)" bytes"}'` 
 
-
 tmp/%.lib: $(OBJ_C)
-	@echo $(MSG)
+	echo $(MSG)
 	@mkdir -p $(@D)
-	@sdcclib $@ $(OBJ_C)
+	sdcc-sdar r $@ $(OBJ_C)
 
 tmp/%.ihx: $(OBJ_ASM) tmp/%.lib 
-	@echo $(MSG)
+	echo $(MSG)
 	@mkdir -p $(@D)
-	@$(CCZ80) -D MSX $(INCLUDES) $(CCFLAGS_MSX) $(OBJ_ASM) tmp/$(NAME).lib -o $@
+	$(CCZ80) -D MSX $(INCLUDES) $(CCFLAGS_MSX) $(OBJ_ASM) tmp/$(NAME).lib -o $@
 
-out/msx/%.rom.old: tmp/%.ihx
-	@echo $(MSG)
+out/msx/%.rom: tmp/%.ihx
+	echo $(MSG)
 	@mkdir -p $(@D)
 	@$(HEXBIN) $< $(<:.ihx=.tmp)
 	@dd skip=16384 count=32768 if=$(<:.ihx=.tmp) of=$@ bs=1 status=none
 	@grep ".*\. bytes " tmp/$(NAME).map | awk '{val=strtonum("0x"$$3); if (val>2) printf "%12s: %6d bytes (%6.2f KiB)\n", $$1, val, val/1024}'
 
-out/msx/%.rom: pre_target $(MSX_LINKER) $(OBJ_C) $(OBJ_ASM)
-	@echo $(MSG)
-	@mkdir -p $(@D)
-	@$(MSX_LINKER) $(OBJ_C) $(OBJ_ASM) $@
+#out/msx/%.rom: pre_target $(MSX_LINKER) $(OBJ_C) $(OBJ_ASM)
+#	@echo $(MSG)
+#	@mkdir -p $(@D)
+#	@echo "$(MSX_LINKER) $(OBJ_C) $(OBJ_ASM) $@"
+#	@$(MSX_LINKER) $(OBJ_C) $(OBJ_ASM) $@
 
 rom: out/msx/$(NAME).rom
 
@@ -171,7 +171,7 @@ msxtr: out/msx/$(NAME).rom
 out/linux/%: pre_target $(SOURCES_C) $(HEADERS)
 	@echo $(MSG)
 	@mkdir -p $(@D)
-	@$(CC) -g -D LINUX $(INCLUDES) $(CCFLAGS_LINUX) $(SOURCES_C) -lSDL2 -o $@ 
+	$(CC) -g -D LINUX $(INCLUDES) $(CCFLAGS_LINUX) $(SOURCES_C) -lSDL2 -o $@ 
 
 run: out/linux/$(NAME)
 	@./$<
@@ -188,7 +188,7 @@ INCLUDE := util
 tmp/%: %.cc
 	@echo $(MSG)
 	@mkdir -p $(@D)
-	@$(CXX) -o $@ $< $(shell echo `grep -m1 "^// FLAGS:" $< | cut -d: -f2-`)
+	$(CXX) -o $@ $< $(shell echo `grep -m1 "^// FLAGS:" $< | cut -d: -f2-`)
 
 %: util/%.cc bin/% 
 	@echo $(MSG)
