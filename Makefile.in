@@ -7,6 +7,7 @@ MSG = "$(@) "
 
 CCZ80 = sdcc
 ASM = sdasz80
+SDAR = sdar
 OPENMSX_BIN = openmsx
 OPENMSX_DEF = $(OPENMSX_BIN)                          $(OPENMSX_PARAM) -carta 
 OPENMSX1    = $(OPENMSX_BIN) -machine C-BIOS_MSX1     $(OPENMSX_PARAM) -carta 
@@ -14,7 +15,7 @@ OPENMSX1_JP = $(OPENMSX_BIN) -machine C-BIOS_MSX1_JP  $(OPENMSX_PARAM) -carta
 OPENMSX2    = $(OPENMSX_BIN) -machine C-BIOS_MSX2     $(OPENMSX_PARAM) -carta 
 OPENMSX2P   = $(OPENMSX_BIN) -machine C-BIOS_MSX2+_JP $(OPENMSX_PARAM) -carta 
 OPENMSXTR   = $(OPENMSX_BIN) -machine Panasonic_FS-A1GT $(OPENMSX_PARAM) -carta 
-HEXBIN = sdcc-makebin -s 4194304
+HEXBIN = makebin -s 4194304
 
 MSX_LINKER = tmp/sdcc_msx/util/module_linker
 
@@ -113,7 +114,7 @@ tmp/%.rel: %.c tmp/inc/resources.h $(HEADERS)
 tmp/%.lib: $(OBJ_C)
 	echo $(MSG)
 	@mkdir -p $(@D)
-	sdcc-sdar r $@ $(OBJ_C)
+	$(SDAR) r $@ $(OBJ_C)
 
 tmp/%.ihx: $(OBJ_ASM) tmp/%.lib 
 	echo $(MSG)
