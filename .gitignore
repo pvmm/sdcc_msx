@@ -1,3 +1,4 @@
 ext/
+demos/qbert
 demos/*/tmp
 demos/*/out
