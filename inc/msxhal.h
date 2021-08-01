@@ -10,12 +10,14 @@
 // INLINE and FASTCALL
 #ifdef MSX
 
-	#define INLINE inline
+    #define INLINE inline
+    #define NORETURN 
 
 #elif LINUX
 
-	#define INLINE static inline
+    #define INLINE static inline
     #define __z88dk_fastcall
+    #define NORETURN __attribute__ ((noreturn));
 
 #else
 	#error "Architecture Not Supported"
